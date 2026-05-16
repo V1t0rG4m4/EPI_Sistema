@@ -1,58 +1,58 @@
-# 🦺 EPI Manager — Sistema de Gestão de EPIs com Django
+# EPI Manager — Sistema de Gestão de Equipamentos de Proteção Individual
 
-Sistema web desenvolvido em **Python + Django** para controle de empréstimo e devolução de Equipamentos de Proteção Individual (EPI), em conformidade com a **NR-6**.
-
----
-
-## 📋 Funcionalidades
-
-**Colaboradores** — CRUD completo com pesquisa por nome e modal de confirmação de exclusão.
-
-**Equipamentos (EPI)** — Cadastro com código, Certificado de Aprovação (CA) e controle de estoque.
-
-**Controle de Empréstimos** — Registro de entrega com status dinâmicos (Emprestado, Fornecido, Devolvido, Danificado, Perdido). Relatório com filtro AND por colaborador, equipamento e status.
-
-**Dashboard** — Cards de resumo em tempo real com os totais de cada categoria.
-
-**Painel Admin Django** — Interface administrativa completa gerada automaticamente pelo Django em `/admin/`.
+Sistema web desenvolvido em Python com o framework Django para controle de empréstimo e devolução de Equipamentos de Proteção Individual (EPI), em conformidade com a NR-6 do Ministério do Trabalho e Emprego.
 
 ---
 
-## 🛠️ Tecnologias
+## Funcionalidades
 
-| Camada      | Tecnologia                     |
-|-------------|-------------------------------|
-| Framework   | Django 5.x                    |
-| Banco       | SQLite (padrão Django)        |
-| ORM         | Django ORM + Migrations       |
-| Formulários | Django Forms (ModelForm)      |
-| Frontend    | Bootstrap 5 + Bootstrap Icons |
-| Templates   | Django Template Language      |
+**Colaboradores** — Cadastro completo com nome, matrícula, cargo, setor, telefone e e-mail. Suporte a pesquisa por nome, edição e exclusão com modal de confirmação.
+
+**Equipamentos (EPI)** — Cadastro com código identificador, Certificado de Aprovação (CA), quantidade em estoque e descrição técnica. Operações completas de criação, leitura, atualização e exclusão.
+
+**Controle de Empréstimos** — Registro de entrega de EPI por colaborador, com datas de entrega e devolução prevista. Atualização de status com campos dinâmicos que aparecem conforme o contexto. Relatório com filtro combinado (AND) por colaborador, equipamento e status.
+
+**Dashboard** — Painel inicial com totais em tempo real: colaboradores, equipamentos, empréstimos ativos, fornecidos, devolvidos e danificados.
+
+**Painel Administrativo** — Interface administrativa completa gerada automaticamente pelo Django, acessível em `/admin/`.
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## Tecnologias Utilizadas
+
+| Camada       | Tecnologia                        |
+|--------------|-----------------------------------|
+| Framework    | Django 5.x                        |
+| Banco        | SQLite (padrão Django)            |
+| ORM          | Django ORM com Migrations         |
+| Formulários  | Django ModelForm                  |
+| Templates    | Django Template Language (DTL)    |
+| Frontend     | Bootstrap 5 e Bootstrap Icons     |
+
+---
+
+## Estrutura do Projeto
 
 ```
 epi_django/
 ├── manage.py
 ├── requirements.txt
 ├── .gitignore
-├── epi_django/               ← Configurações do projeto
+├── epi_django/                    <- Configurações do projeto Django
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
-└── core/                     ← Aplicação principal
-    ├── models.py             ← Colaborador, Equipamento, Emprestimo
-    ├── views.py              ← Lógica de cada tela
-    ├── forms.py              ← Formulários com validação
-    ├── urls.py               ← Roteamento da app
-    ├── admin.py              ← Configuração do painel admin
-    ├── migrations/           ← Histórico do banco de dados
-    ├── static/core/css/      ← Estilo personalizado
-    └── templates/core/       ← Templates HTML
-        ├── base.html
-        ├── index.html
+└── core/                          <- Aplicação principal
+    ├── models.py                  <- Modelos: Colaborador, Equipamento, Emprestimo
+    ├── views.py                   <- Lógica de cada tela
+    ├── forms.py                   <- Formulários com validação nativa
+    ├── urls.py                    <- Roteamento interno da aplicação
+    ├── admin.py                   <- Configuração do painel administrativo
+    ├── migrations/                <- Histórico de alterações no banco de dados
+    ├── static/core/css/           <- Folha de estilos personalizada
+    └── templates/core/            <- Templates HTML
+        ├── base.html              <- Template base com menu lateral e topbar
+        ├── index.html             <- Dashboard
         ├── colaboradores/
         ├── equipamentos/
         └── emprestimos/
@@ -60,54 +60,104 @@ epi_django/
 
 ---
 
-## 🚀 Como Executar
+## Como Executar Localmente
 
+Pre-requisito: Python 3.10 ou superior instalado na maquina.
+
+**1. Clone o repositório**
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/V1t0rG4m4/EPI_Sistema.git
 cd EPI_Sistema
+```
 
-# 2. Crie e ative o ambiente virtual
+**2. Crie e ative um ambiente virtual**
+```bash
+# Windows
 python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # Linux/macOS
+venv\Scripts\activate
 
-# 3. Instale as dependências
+# Linux / macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**3. Instale as dependências**
+```bash
 pip install -r requirements.txt
+```
 
-# 4. Execute as migrations (cria o banco de dados)
+**4. Execute as migrations para criar o banco de dados**
+```bash
 python manage.py migrate
+```
 
-# 5. Crie um superusuário para o admin (opcional)
+**5. Crie um superusuário para acessar o painel administrativo**
+```bash
 python manage.py createsuperuser
+```
 
-# 6. Inicie o servidor
+**6. Inicie o servidor de desenvolvimento**
+```bash
 python manage.py runserver
 ```
 
-Acesse em: **http://127.0.0.1:8000**
-Painel admin: **http://127.0.0.1:8000/admin/**
+**7. Acesse no navegador**
+
+Sistema: http://127.0.0.1:8000
+
+Painel admin: http://127.0.0.1:8000/admin/
 
 ---
 
-## 📌 Diferenças em relação à versão Flask
+## Status dos Empréstimos
 
-| Aspecto        | Flask (versão anterior)       | Django (versão atual)              |
-|----------------|-------------------------------|------------------------------------|
-| Banco          | SQL manual com `sqlite3`      | ORM com `models.py` e migrations   |
-| Formulários    | HTML manual + validação na view | `ModelForm` com validação nativa |
-| Admin          | Não tinha                     | Painel completo em `/admin/`       |
-| Rotas          | Decoradores `@app.route`      | `urls.py` centralizado por app     |
-| Organização    | Arquivo único `app.py`        | Separação em models/views/forms    |
-
----
-
-## 📚 Referência Normativa
-
-Desenvolvido para auxiliar o cumprimento da **NR-6** — Equipamentos de Proteção Individual.
+| Status      | Descrição                                       |
+|-------------|-------------------------------------------------|
+| Emprestado  | EPI entregue temporariamente ao colaborador     |
+| Fornecido   | EPI entregue em caráter definitivo              |
+| Devolvido   | EPI retornado ao estoque em boas condições      |
+| Danificado  | EPI retornado com avarias                       |
+| Perdido     | EPI não localizado ou extraviado                |
 
 ---
 
-## 👨‍💻 Autor
+## Modelo de Dados
 
-Desenvolvido por **Vítor Gama** — Análise e Desenvolvimento de Sistemas, SENAI.
+O sistema possui três tabelas relacionadas entre si por chaves estrangeiras.
+
+```
+colaboradores               equipamentos
+─────────────               ────────────
+id (PK)                     id (PK)
+nome                        nome
+matricula (UNIQUE)          codigo (UNIQUE)
+cargo                       descricao
+setor                       quantidade
+telefone                    ca
+email                       criado_em
+criado_em
+          \                /
+            emprestimos
+            ───────────
+            id (PK)
+            colaborador_id (FK)
+            equipamento_id (FK)
+            data_emprestimo
+            data_prevista_devolucao
+            data_devolucao
+            status
+            observacao_devolucao
+            criado_em
+```
+
+---
+
+## Referência Normativa
+
+Este sistema foi desenvolvido para auxiliar o cumprimento da NR-6 — Equipamentos de Proteção Individual, que regulamenta a obrigatoriedade de fornecimento, registro e controle de EPIs por parte do empregador.
+
+---
+
+## Autor
+
+Desenvolvido por Vítor Gama como projeto prático do curso de Análise e Desenvolvimento de Sistemas — SENAI.
