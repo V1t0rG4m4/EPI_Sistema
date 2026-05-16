@@ -1,0 +1,32 @@
+# Banco de dados (gerado automaticamente)
+epi.db
+db.sqlite3
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Arquivos estáticos coletados (produção)
+staticfiles/
+
+# Arquivos de mídia enviados por usuários
+media/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

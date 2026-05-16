@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% block title %}Controle de EPI{% endblock %}
+{% block page_title %}<i class="bi bi-arrow-left-right me-2"></i>Controle de EPI — Empréstimos{% endblock %}
+
+{% block content %}
+<div class="card-panel">
+  <div class="panel-header">
+    <span><i class="bi bi-list-check me-2"></i>Relatório de Empréstimos</span>
+    <a href="{% url 'core:emprestimos_novo' %}" class="btn-primary-sm">
+      <i class="bi bi-plus-circle-fill me-1"></i>Novo Empréstimo
+    </a>
+  </div>
+
+  <div class="search-bar">
+    <form method="get">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label-custom small mb-1">Colaborador</label>
+          <input type="text" name="colaborador" value="{{ colab_busca }}"
+                 class="form-control form-control-custom" placeholder="Nome do colaborador…"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label-custom small mb-1">Equipamento</label>
+          <input type="text" name="equipamento" value="{{ equip_busca }}"
+                 class="form-control form-control-custom" placeholder="Nome do equipamento…"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label-custom small mb-1">Status</label>
+          <select name="status" class="form-select form-control-custom">
+            <option value="">Todos</option>
+            {% for s in status_todos %}
+              <option value="{{ s }}" {% if s == status_busca %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-orange w-100">
+            <i class="bi bi-funnel-fill me-1"></i>Filtrar
+          </button>
+          {% if colab_busca or equip_busca or status_busca %}
+            <a href="{% url 'core:emprestimos_lista' %}" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-x-lg"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-dark-head">
+        <tr>
+          <th>#</th><th>Colaborador</th><th>EPI</th>
+          <th>Entrega</th><th>Prev. Devolução</th><th>Devolução</th>
+          <th>Status</th><th class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in emprestimos %}
+        <tr>
+          <td class="text-muted small">{{ e.id }}</td>
+          <td class="fw-semibold">
+            <span class="avatar-initials me-1">{{ e.colaborador.nome|first }}</span>
+            {{ e.colaborador.nome }}
+          </td>
+          <td><i class="bi bi-shield-fill text-orange me-1"></i>{{ e.equipamento.nome }}</td>
+          <td class="small text-muted">{{ e.data_emprestimo|date:"d/m/Y H:i" }}</td>
+          <td class="small text-muted">{{ e.data_prevista_devolucao|date:"d/m/Y H:i" }}</td>
+          <td class="small text-muted">
+            {% if e.data_devolucao %}{{ e.data_devolucao|date:"d/m/Y H:i" }}{% else %}—{% endif %}
+          </td>
+          <td>
+            <span class="badge-status badge-{{ e.status|lower }}">{{ e.status }}</span>
+          </td>
+          <td class="text-center">
+            <a href="{% url 'core:emprestimos_editar' e.pk %}"
+               class="btn btn-sm btn-outline-primary" title="Atualizar Status">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted py-4">
+            <i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhum empréstimo encontrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

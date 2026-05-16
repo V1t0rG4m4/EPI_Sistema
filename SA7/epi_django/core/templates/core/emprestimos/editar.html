@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% block title %}Atualizar Empréstimo{% endblock %}
+{% block page_title %}<i class="bi bi-pencil-square me-2"></i>Atualizar Status do Empréstimo{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <!-- Dados somente leitura -->
+    <div class="card-panel mb-4">
+      <div class="panel-header">
+        <span><i class="bi bi-lock-fill me-2"></i>Dados do Empréstimo (somente leitura)</span>
+        <a href="{% url 'core:emprestimos_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <div class="p-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Colaborador</label>
+            <div class="readonly-field">
+              <span class="avatar-initials me-2">{{ emp.colaborador.nome|first }}</span>
+              {{ emp.colaborador.nome }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Equipamento (EPI)</label>
+            <div class="readonly-field">
+              <i class="bi bi-shield-fill text-orange me-2"></i>{{ emp.equipamento.nome }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Data do Empréstimo</label>
+            <div class="readonly-field">
+              <i class="bi bi-calendar-event me-2 text-muted"></i>
+              {{ emp.data_emprestimo|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Previsão de Devolução</label>
+            <div class="readonly-field">
+              <i class="bi bi-calendar-check me-2 text-muted"></i>
+              {{ emp.data_prevista_devolucao|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos editáveis -->
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-pencil-fill me-2"></i>Atualizar Status</span>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.status.label }}</label>
+            {{ form.status }}
+          </div>
+          <div class="col-md-6" id="grupoDevolucao" style="display:none;">
+            <label class="form-label-custom">{{ form.data_devolucao.label }}</label>
+            {{ form.data_devolucao }}
+          </div>
+          <div class="col-12" id="grupoObservacao" style="display:none;">
+            <label class="form-label-custom">{{ form.observacao_devolucao.label }}</label>
+            {{ form.observacao_devolucao }}
+          </div>
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Salvar Alterações
+            </button>
+            <a href="{% url 'core:emprestimos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const statusDevolucao = {{ status_devolucao|safe }};
+  const sel = document.getElementById('id_status');
+  function toggle() {
+    const show = statusDevolucao.includes(sel.value);
+    document.getElementById('grupoDevolucao').style.display  = show ? '' : 'none';
+    document.getElementById('grupoObservacao').style.display = show ? '' : 'none';
+  }
+  toggle();
+  sel.addEventListener('change', toggle);
+</script>
+{% endblock %}

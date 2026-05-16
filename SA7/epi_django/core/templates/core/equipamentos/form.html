@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}<i class="bi bi-shield-plus me-2"></i>{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-shield me-2"></i>Dados do Equipamento de Proteção Individual</span>
+        <a href="{% url 'core:equipamentos_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label-custom">{{ form.nome.label }} <span class="text-danger">*</span></label>
+            {{ form.nome }}
+            {% if form.nome.errors %}<div class="text-danger small mt-1">{{ form.nome.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">{{ form.codigo.label }} <span class="text-danger">*</span></label>
+            {{ form.codigo }}
+            {% if form.codigo.errors %}<div class="text-danger small mt-1">{{ form.codigo.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.ca.label }}</label>
+            {{ form.ca }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.quantidade.label }}</label>
+            {{ form.quantidade }}
+          </div>
+          <div class="col-12">
+            <label class="form-label-custom">{{ form.descricao.label }}</label>
+            {{ form.descricao }}
+          </div>
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Salvar Equipamento
+            </button>
+            <a href="{% url 'core:equipamentos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "core/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}<i class="bi bi-plus-circle-fill me-2"></i>{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-arrow-left-right me-2"></i>Dados do Empréstimo</span>
+        <a href="{% url 'core:emprestimos_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.colaborador.label }} <span class="text-danger">*</span></label>
+            {{ form.colaborador }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.equipamento.label }} <span class="text-danger">*</span></label>
+            {{ form.equipamento }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.data_emprestimo.label }} <span class="text-danger">*</span></label>
+            {{ form.data_emprestimo }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.data_prevista_devolucao.label }} <span class="text-danger">*</span></label>
+            {{ form.data_prevista_devolucao }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.status.label }}</label>
+            {{ form.status }}
+            <div class="form-text text-muted small mt-1">
+              <i class="bi bi-info-circle me-1"></i>
+              Devolvido, Danificado e Perdido ficam disponíveis ao <em>editar</em> o empréstimo.
+            </div>
+          </div>
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Registrar Empréstimo
+            </button>
+            <a href="{% url 'core:emprestimos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Preenche a data de entrega com o momento atual
+  const agora = new Date();
+  const local = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+  const campo = document.querySelector('input[type="datetime-local"]');
+  if (campo && !campo.value) campo.value = local;
+</script>
+{% endblock %}
