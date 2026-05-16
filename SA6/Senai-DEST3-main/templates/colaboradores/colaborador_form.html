@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Editar colaborador{% else %}Novo colaborador{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Editar colaborador{% else %}Cadastrar colaborador{% endif %}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <p>
+        <label for="{{ form.nome.id_for_label }}">Nome</label><br>
+        {{ form.nome }}
+        {{ form.nome.errors }}
+    </p>
+    <p>
+        <label for="{{ form.matricula.id_for_label }}">Matrícula</label><br>
+        {{ form.matricula }}
+        {{ form.matricula.errors }}
+    </p>
+    <p>
+        <label for="{{ form.setor.id_for_label }}">Setor</label><br>
+        {{ form.setor }}
+        {{ form.setor.errors }}
+    </p>
+    <p>
+        <label for="{{ form.cargo.id_for_label }}">Cargo</label><br>
+        {{ form.cargo }}
+        {{ form.cargo.errors }}
+    </p>
+    <p>
+        {{ form.ativo }}
+        <label for="{{ form.ativo.id_for_label }}">Ativo</label>
+    </p>
+    <p>
+        <button type="submit">Salvar</button>
+        <a href="{% url 'colaboradores:lista' %}">Voltar</a>
+    </p>
+</form>
+{% endblock %}
