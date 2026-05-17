@@ -1,0 +1,133 @@
+{% extends "core/base.html" %}
+{% block title %}Atualizar Empréstimo{% endblock %}
+{% block page_title %}<i class="bi bi-pencil-square me-2"></i>Atualizar Status do Empréstimo{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <!-- Dados somente leitura — o requisito pede que esses campos não sejam editáveis -->
+    <div class="card-panel mb-4">
+      <div class="panel-header">
+        <span><i class="bi bi-lock-fill me-2"></i>Dados do Empréstimo (somente leitura)</span>
+        <a href="{% url 'core:emprestimos_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <div class="p-4">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label-custom">Colaborador</label>
+            <div class="readonly-field">
+              <span class="avatar-initials me-2">{{ emp.colaborador.nome|first }}</span>
+              {{ emp.colaborador.nome }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Equipamento (EPI)</label>
+            <div class="readonly-field">
+              <i class="bi bi-shield-fill text-orange me-2"></i>{{ emp.equipamento.nome }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Data do Empréstimo</label>
+            <div class="readonly-field">
+              <i class="bi bi-calendar-event me-2 text-muted"></i>
+              {{ emp.data_emprestimo|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">Previsão de Devolução</label>
+            <div class="readonly-field">
+              <i class="bi bi-calendar-check me-2 text-muted"></i>
+              {{ emp.data_prevista_devolucao|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos editáveis: apenas status, data de devolução e observação -->
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-pencil-fill me-2"></i>Atualizar Status</span>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+
+          <!-- Status — todos os 5 valores disponíveis na edição -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.status.label }}</label>
+            {{ form.status }}
+            {% if form.status.errors %}
+              <div class="invalid-feedback d-block">{{ form.status.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <!--
+            Data de Devolução e Observação só aparecem quando o status é
+            Devolvido, Danificado ou Perdido — controlado pelo JS abaixo.
+          -->
+          <div class="col-md-6" id="grupoDevolucao" style="display:none;">
+            <label class="form-label-custom">{{ form.data_devolucao.label }}</label>
+            {{ form.data_devolucao }}
+            {% if form.data_devolucao.errors %}
+              <div class="invalid-feedback d-block">{{ form.data_devolucao.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-12" id="grupoObservacao" style="display:none;">
+            <label class="form-label-custom">{{ form.observacao_devolucao.label }}</label>
+            {{ form.observacao_devolucao }}
+            {% if form.observacao_devolucao.errors %}
+              <div class="invalid-feedback d-block">{{ form.observacao_devolucao.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Salvar Alterações
+            </button>
+            <a href="{% url 'core:emprestimos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /*
+   * Os status que exigem exibição dos campos de devolução.
+   * Definido como array JS com aspas duplas (JSON válido).
+   */
+  const STATUS_DEVOLUCAO = ["Devolvido", "Danificado", "Perdido"];
+
+  const sel            = document.getElementById('id_status');
+  const grupoDevolucao = document.getElementById('grupoDevolucao');
+  const grupoObs       = document.getElementById('grupoObservacao');
+  const campoDev       = document.getElementById('id_data_devolucao');
+
+  function toggle() {
+    const mostrar = STATUS_DEVOLUCAO.includes(sel.value);
+    grupoDevolucao.style.display = mostrar ? '' : 'none';
+    grupoObs.style.display       = mostrar ? '' : 'none';
+
+    // Limpa os campos quando o usuário muda para um status que não exige devolução,
+    // evitando enviar dados residuais ao servidor.
+    if (!mostrar) {
+      if (campoDev) campoDev.value = '';
+      const obs = document.getElementById('id_observacao_devolucao');
+      if (obs) obs.value = '';
+    }
+  }
+
+  // Executa ao carregar para refletir o status atual já salvo no banco.
+  toggle();
+  sel.addEventListener('change', toggle);
+</script>
+{% endblock %}

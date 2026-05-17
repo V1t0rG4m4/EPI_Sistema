@@ -1,0 +1,133 @@
+{% extends "core/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}<i class="bi bi-plus-circle-fill me-2"></i>{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-arrow-left-right me-2"></i>Dados do Empréstimo</span>
+        <a href="{% url 'core:emprestimos_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+
+          <!-- Colaborador -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.colaborador.label }} <span class="text-danger">*</span></label>
+            {{ form.colaborador }}
+            {% if form.colaborador.errors %}
+              <div class="invalid-feedback d-block">{{ form.colaborador.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Equipamento -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.equipamento.label }} <span class="text-danger">*</span></label>
+            {{ form.equipamento }}
+            {% if form.equipamento.errors %}
+              <div class="invalid-feedback d-block">{{ form.equipamento.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Data de Entrega -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.data_emprestimo.label }} <span class="text-danger">*</span></label>
+            {{ form.data_emprestimo }}
+            {% if form.data_emprestimo.errors %}
+              <div class="invalid-feedback d-block">{{ form.data_emprestimo.errors|join:", " }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Data Prevista para Devolução — validada no back-end -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.data_prevista_devolucao.label }} <span class="text-danger">*</span></label>
+            {{ form.data_prevista_devolucao }}
+            {% if form.data_prevista_devolucao.errors %}
+              <div class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                {{ form.data_prevista_devolucao.errors|join:", " }}
+              </div>
+            {% else %}
+              <div class="form-text text-muted small mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                Deve ser posterior à data e hora atuais.
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.status.label }}</label>
+            {{ form.status }}
+            <div class="form-text text-muted small mt-1">
+              <i class="bi bi-info-circle me-1"></i>
+              Devolvido, Danificado e Perdido ficam disponíveis ao <em>editar</em> o empréstimo.
+            </div>
+          </div>
+
+          <!-- Erros gerais (ex.: erros de clean()) -->
+          {% if form.non_field_errors %}
+            <div class="col-12">
+              <div class="alert alert-danger py-2">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {{ form.non_field_errors|join:" " }}
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Registrar Empréstimo
+            </button>
+            <a href="{% url 'core:emprestimos_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Preenche a data de entrega com o momento atual ao carregar a tela vazia.
+  // A data prevista fica em branco para o usuário preencher conscientemente.
+  const agora  = new Date();
+  const offset = agora.getTimezoneOffset() * 60000;
+  const local  = new Date(agora.getTime() - offset).toISOString().slice(0, 16);
+
+  const campoEntrega = document.getElementById('id_data_emprestimo');
+  if (campoEntrega && !campoEntrega.value) campoEntrega.value = local;
+
+  // Validação client-side: data_prevista_devolucao deve ser futura.
+  // O back-end (forms.py clean()) repete a verificação como camada secundária.
+  const campoPrev = document.getElementById('id_data_prevista_devolucao');
+  const formEl    = document.querySelector('form');
+
+  if (formEl && campoPrev) {
+    formEl.addEventListener('submit', function(e) {
+      if (campoPrev.value && new Date(campoPrev.value) <= new Date()) {
+        e.preventDefault();
+        campoPrev.classList.add('is-invalid');
+        let fb = campoPrev.parentNode.querySelector('.invalid-feedback');
+        if (!fb) {
+          fb = document.createElement('div');
+          fb.className = 'invalid-feedback d-block';
+          campoPrev.parentNode.appendChild(fb);
+        }
+        fb.style.display = 'block';
+        fb.textContent = 'A data prevista deve ser posterior à data e hora atuais.';
+        campoPrev.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+    campoPrev.addEventListener('change', function() {
+      this.classList.remove('is-invalid');
+    });
+  }
+</script>
+{% endblock %}

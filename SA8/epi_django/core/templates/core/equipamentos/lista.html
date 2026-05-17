@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+{% block title %}Equipamentos{% endblock %}
+{% block page_title %}<i class="bi bi-shield-fill me-2"></i>Equipamentos (EPI){% endblock %}
+
+{% block content %}
+<div class="card-panel">
+  <div class="panel-header">
+    <span><i class="bi bi-shield me-2"></i>Lista de Equipamentos de Proteção Individual</span>
+    <a href="{% url 'core:equipamentos_novo' %}" class="btn-primary-sm">
+      <i class="bi bi-shield-plus me-1"></i>Novo Equipamento
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-dark-head">
+        <tr>
+          <th>#</th><th>Nome do EPI</th><th>Código</th><th>CA</th>
+          <th>Quantidade</th><th>Descrição</th><th class="text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in equipamentos %}
+        <tr>
+          <td class="text-muted small">{{ e.id }}</td>
+          <td class="fw-semibold">
+            <i class="bi bi-shield-fill text-orange me-2"></i>{{ e.nome }}
+          </td>
+          <td><code class="text-orange">{{ e.codigo }}</code></td>
+          <td>{{ e.ca|default:"—" }}</td>
+          <td>
+            <span class="badge {% if e.quantidade > 0 %}bg-success{% else %}bg-danger{% endif %}">
+              {{ e.quantidade }} un.
+            </span>
+          </td>
+          <td class="text-muted small">{{ e.descricao|default:"—"|truncatechars:50 }}</td>
+          <td class="text-center">
+            <a href="{% url 'core:equipamentos_editar' e.pk %}"
+               class="btn btn-sm btn-outline-primary me-1" title="Editar">
+              <i class="bi bi-pencil-fill"></i>
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-danger"
+                    data-bs-toggle="modal" data-bs-target="#modalExcluir"
+                    data-id="{{ e.pk }}" data-nome="{{ e.nome }}" title="Excluir">
+              <i class="bi bi-trash3-fill"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">
+            <i class="bi bi-shield-x fs-3 d-block mb-2"></i>Nenhum equipamento cadastrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="modalExcluir" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-dark-border">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-danger">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Exclusão
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir o equipamento <strong id="modalNome" class="text-orange"></strong>?</p>
+        <p class="text-muted small mb-0">Esta ação não pode ser desfeita.</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form id="formExcluir" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash3-fill me-1"></i>Excluir
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('modalExcluir').addEventListener('show.bs.modal', e => {
+    const btn = e.relatedTarget;
+    document.getElementById('modalNome').textContent = btn.dataset.nome;
+    document.getElementById('formExcluir').action = '/equipamentos/' + btn.dataset.id + '/excluir/';
+  });
+</script>
+{% endblock %}

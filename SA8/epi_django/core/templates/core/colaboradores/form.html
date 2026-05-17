@@ -1,0 +1,55 @@
+{% extends "core/base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}<i class="bi bi-person-plus-fill me-2"></i>{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-panel">
+      <div class="panel-header">
+        <span><i class="bi bi-person-vcard me-2"></i>Dados do Colaborador</span>
+        <a href="{% url 'core:colaboradores_lista' %}" class="btn-outline-sm">
+          <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+      </div>
+      <form method="post" class="p-4" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label-custom">{{ form.nome.label }} <span class="text-danger">*</span></label>
+            {{ form.nome }}
+            {% if form.nome.errors %}<div class="text-danger small mt-1">{{ form.nome.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label-custom">{{ form.matricula.label }} <span class="text-danger">*</span></label>
+            {{ form.matricula }}
+            {% if form.matricula.errors %}<div class="text-danger small mt-1">{{ form.matricula.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.cargo.label }} <span class="text-danger">*</span></label>
+            {{ form.cargo }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.setor.label }} <span class="text-danger">*</span></label>
+            {{ form.setor }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.telefone.label }}</label>
+            {{ form.telefone }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label-custom">{{ form.email.label }}</label>
+            {{ form.email }}
+          </div>
+          <div class="col-12 d-flex gap-3 mt-2">
+            <button type="submit" class="btn btn-orange">
+              <i class="bi bi-floppy-fill me-2"></i>Salvar Colaborador
+            </button>
+            <a href="{% url 'core:colaboradores_lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
